@@ -12,3 +12,7 @@ class IsSuperUserOnly(permissions.BasePermission):  #allow ony superuser to crea
 class IsPatient(permissions.BasePermission):     #check user is patient or not 
     def has_permission(self, request, view):
         return hasattr(request.user, 'patient')
+
+class IsDoctor(permissions.BasePermission): #check user is Doctor or not
+    def has_permission(self, request, view):
+        return hasattr(request.user, 'doctor')

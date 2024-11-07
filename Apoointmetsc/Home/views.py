@@ -85,3 +85,18 @@ class Showappointments(APIView):
         appointments = Appointment.objects.filter(patient=patient, status='scheduled') 
         serializer = AppointmentSerializer(appointments, many=True) 
         return Response(serializer.data, status=status.HTTP_200_OK) 
+
+class Getdoctor(APIView):
+    permission_classes = [IsAuthenticated, IsPatient]  # Only allow patients to access this view
+
+    def get(self, request):
+        specialization = request.query_params.get('specialization')
+        if not specialization:
+            return Response({'error': 'Specialization-required'}, status=status.HTTP_400_BAD_REQUEST)
+        doctors = Doctor.objects.filter(specialization=specialization)
+        if not doctors:
+            return Response({'error': 'No doctors found '}, status=status.HTTP_404_NOT_FOUND)
+        serializer = DoctorSerializer(doctors, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
