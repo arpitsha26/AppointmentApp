@@ -8,7 +8,7 @@ class Customuser(AbstractUser):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
     email = models.EmailField(unique=True)
-    phone_number=models.CharField(max_length=15, blank=True, null= True)
+    phone_number=models.CharField(max_length=15,)
     
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)

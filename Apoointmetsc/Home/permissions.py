@@ -1,0 +1,10 @@
+from rest_framework import permissions
+
+class IsAdminOrSuperUser(permissions.BasePermission): #allow only admin and superuser to create doctor
+    def has_permission(self, request, view):
+        return request.user and request.user.is_staff
+
+class IsSuperUserOnly(permissions.BasePermission):  #allow ony superuser to create admin
+
+    def has_permission(self, request, view):
+        return request.user and request.user.is_superuser
