@@ -82,6 +82,6 @@ class Showappointments(APIView):
         except Patient.DoesNotExist:
             return Response({'error': 'Patient not found'}, status=status.HTTP_404_NOT_FOUND)
         
-        appointments = Appointment.objects.filter(patient=patient, status='scheduled')
-        serializer = AppointmentSerializer(appointments, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        appointments = Appointment.objects.filter(patient=patient, status='scheduled') 
+        serializer = AppointmentSerializer(appointments, many=True) 
+        return Response(serializer.data, status=status.HTTP_200_OK) 
