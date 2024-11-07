@@ -1,10 +1,12 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from .permissions import IsAdminOrSuperUser, IsSuperUserOnly
 from .serializers import PatientSerializer, DoctorSerializer, AdminSerializer
 from django.contrib.auth import get_user_model
+from django.conf import settings
+
 
 User = get_user_model()
 
@@ -29,7 +31,7 @@ class Patientsignup(APIView):
     
 
 class Doctorsignup(APIView):
-    permission_classes = [IsAdminOrSuperUser] 
+    permission_classes = [IsAdminOrSuperUser,IsAuthenticated] 
     def post(self, request):
         serializer = DoctorSerializer(data=request.data)
         if serializer.is_valid():
