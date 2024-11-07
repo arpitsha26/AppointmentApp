@@ -6,17 +6,17 @@ class CustomuserSerializer(serializers.ModelSerializer):
         model = Customuser
         fields = ['id', 'first_name', 'last_name', 'email', 'phone_number','password']
 
-class DoctorSerializer(serializers.ModelSerializer):
+class DoctorSerializer(CustomuserSerializer):
     class Meta:
         model = Doctor
         fields = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'specialization','password']
 
-class PatientSerializer(serializers.ModelSerializer):
+class PatientSerializer(CustomuserSerializer):
     class Meta:
         model = Patient
         fields = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'Illness','password']
 
-class AdminSerializer(serializers.ModelSerializer):
+class AdminSerializer(CustomuserSerializer):
     class Meta:
         model = Admin
         fields = ['id', 'first_name', 'last_name', 'email', 'phone_number','password']
