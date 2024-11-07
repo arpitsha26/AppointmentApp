@@ -68,3 +68,20 @@ class Createappointment(APIView):
             appointment = serializer.save(doctor=doctor)
             return Response(AppointmentSerializer(appointment).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class Showappointments(APIView):
+    permission_classes = [IsAuthenticated] 
+    
+    def get(self, request):
+        email = request.query_params.get('email')
+        if not email:
+            return Response({'error': 'email-required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            patient = Patient.objects.get(email=email)
+        except Patient.DoesNotExist:
+            return Response({'error': 'Patient not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        appointments = Appointment.objects.filter(patient=patient, status='scheduled')
+        serializer = AppointmentSerializer(appointments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
