@@ -7,16 +7,15 @@ class CustomuserSerializer(serializers.ModelSerializer):
         model = Customuser
         fields = ['id', 'first_name', 'last_name', 'email', 'phone_number','password']
         extra_kwargs = {'password': {'write_only': True}}
+    
     def create(self, validated_data):
-        user = Customuser(
-        email=validated_data['email'],
-        first_name=validated_data.get('first_name'),
-        last_name=validated_data.get('last_name'),
-        phone_number=validated_data.get('phone_number'),
-        )
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
+        validated_data['password'] = make_password(validated_data['password'])
+        return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        if 'password' in validated_data:
+            validated_data['password'] = make_password(validated_data['password'])
+        return super().update(instance, validated_data)
 
 class DoctorSerializer(CustomuserSerializer):
     class Meta:
@@ -40,3 +39,14 @@ class AppointmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
         fields = ['id', 'patient', 'doctor', 'appointment_date', 'status']
+        
+    
+    def create(self, validated_data):
+        patient = self.context['request'].user.patient # get the patient from the request context
+        appointment = Appointment.objects.create(  # Associate the patient with the appointment
+            patient=patient,
+            doctor=validated_data['doctor'],
+            appointment_date=validated_data['appointment_date'],
+            status=validated_data['status']
+        )
+        return appointment
