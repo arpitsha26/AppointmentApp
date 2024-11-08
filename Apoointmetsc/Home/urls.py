@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import include, path
-from .views import Signup, Patientsignup, Doctorsignup, Adminsignup, Createappointment, Showappointments, Getdoctor
+from .views import Signup, Patientsignup, Doctorsignup, Adminsignup, Createappointment, Showappointments, Getdoctor, Markcomplete
 from rest_framework_simplejwt.views import  TokenObtainPairView,TokenRefreshView
 
 urlpatterns = [
@@ -13,6 +13,7 @@ urlpatterns = [
     path('createAppointment/', Createappointment.as_view(), name='create_appointment'),
     path('showAppointment/', Showappointments.as_view(), name='show_appointment'),
     path('getdoctor/',Getdoctor.as_view(), name='get_doctor'),
+    path('/doctor/completed/',Markcomplete.as_view(), name='appoinment_markcomp.' ),
     
     
 ]

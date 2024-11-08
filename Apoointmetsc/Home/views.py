@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated,AllowAny
-from .permissions import IsAdminOrSuperUser, IsSuperUserOnly, IsPatient
+from .permissions import IsAdminOrSuperUser, IsSuperUserOnly, IsPatient, IsDoctor
 from .serializers import PatientSerializer, DoctorSerializer, AdminSerializer, AppointmentSerializer
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -87,7 +87,7 @@ class Showappointments(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK) 
 
 class Getdoctor(APIView):
-    permission_classes = [IsAuthenticated, IsPatient]  # Only allow patients to access this view
+    permission_classes = [IsAuthenticated, IsPatient]  
 
     def get(self, request):
         specialization = request.query_params.get('specialization')
@@ -99,4 +99,29 @@ class Getdoctor(APIView):
         serializer = DoctorSerializer(doctors, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+class Markcomplete(APIView):
+    permission_classes = [IsDoctor] 
+    
+    def patch(self, request):
+        appointment_id = request.query_params.get('appointment_id')
+        
+        if not appointment_id:
+            return Response({'error': 'Appointmentid- required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            appointment = Appointment.objects.get(id=appointment_id)
+        except Appointment.DoesNotExist:
+            return Response({'error': 'Appointment not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        if appointment.doctor != request.user.doctor:
+            return Response({'error': 'you are not appointed doctor to this appointment'}, status=status.HTTP_403_FORBIDDEN)
 
+        appointment.status = 'completed'
+        appointment.save()
+        return Response({
+            'messg': 'mark completed done',
+            'appointment': {
+                'id': appointment.id,
+                'status': appointment.status
+            }
+        }, status=status.HTTP_200_OK)
