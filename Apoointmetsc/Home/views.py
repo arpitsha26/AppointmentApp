@@ -3,11 +3,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from .permissions import IsAdminOrSuperUser, IsSuperUserOnly, IsPatient, IsDoctor
-from .serializers import PatientSerializer, DoctorSerializer, AdminSerializer, AppointmentSerializer
+from .serializers import PatientSerializer, DoctorSerializer, AdminSerializer, AppointmentSerializer, PasswordResetSerializer
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from .models import Doctor, Patient, Admin, Appointment
+import jwt
 
 User = get_user_model()
 
@@ -125,3 +126,41 @@ class Markcomplete(APIView):
                 'status': appointment.status
             }
         }, status=status.HTTP_200_OK)
+        
+
+class Passwordreset(APIView):
+    def post(self, request):
+        serializer = PasswordResetSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Password reset link has been sent to your email."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
